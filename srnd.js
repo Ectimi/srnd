@@ -21,11 +21,11 @@ function createEl({ type = "div", classList = [] } = {}) {
   el.classList = classList;
   return el;
 }
-
 class srnd {
   constructor({
     el,
     boundary = document.documentElement,
+    onlyDrag = false,
     onDragStart,
     onDrag,
     onDragStop,
@@ -38,9 +38,16 @@ class srnd {
     }
     const { width, height } = el.getBoundingClientRect();
     this.el = el;
+    this.boundary = boundary;
+    this.onlyDrag = onlyDrag;
+    this.onDragStart = onDragStart;
+    this.onDrag = onDrag;
+    this.onDragStop = onDragStop;
+    this.onResizeStart = onResizeStart;
+    this.onResize = onResize;
+    this.onResizeStop = onResizeStop;
     this.scaleWidth = width;
     this.scaleHeight = height;
-    this.boundary = boundary;
     this.init();
   }
 
@@ -57,24 +64,27 @@ class srnd {
         this.el.style.cursor = "move";
         this.el.style.position = pos === "fixed" ? pos : "absolute";
 
-        this.initLineAndDot();
         this.setBoundary();
         this.addMove({
           callback: this.update,
         });
-        this.addScale({
-          controllers: [
-            { el: this.topCenterDot, dir: "n" },
-            { el: this.bottomCenterDot, dir: "s" },
-            { el: this.leftCenterDot, dir: "w" },
-            { el: this.rightCenterDot, dir: "e" },
-            { el: this.bottomRightDot, dir: "se" },
-            { el: this.bottomLeftDot, dir: "sw" },
-            { el: this.topLeftDot, dir: "nw" },
-            { el: this.topRightDot, dir: "ne" },
-          ],
-          callback: this.update,
-        });
+
+        if (!this.onlyDrag) {
+          this.initLineAndDot();
+          this.addScale({
+            controllers: [
+              { el: this.topCenterDot, dir: "n" },
+              { el: this.bottomCenterDot, dir: "s" },
+              { el: this.leftCenterDot, dir: "w" },
+              { el: this.rightCenterDot, dir: "e" },
+              { el: this.bottomRightDot, dir: "se" },
+              { el: this.bottomLeftDot, dir: "sw" },
+              { el: this.topLeftDot, dir: "nw" },
+              { el: this.topRightDot, dir: "ne" },
+            ],
+            callback: this.update,
+          });
+        }
       }
     });
   };
@@ -84,7 +94,7 @@ class srnd {
     this.minX = x;
     this.minY = y;
     this.maxX = x + width - this.el.clientWidth;
-    this.maxY = x + height - this.el.clientHeight;
+    this.maxY = y + height - this.el.clientHeight;
     this.minWidth = 30;
     this.minHeight = 30;
     this.bwidth = width;
@@ -133,69 +143,71 @@ class srnd {
 
     this.setBoundary();
 
-    setStyle(this.topLine, {
-      left: x + "px",
-      top: y + "px",
-      width: width + "px",
-    });
+    if (!this.onlyDrag) {
+      setStyle(this.topLine, {
+        left: x + "px",
+        top: y + "px",
+        width: width + "px",
+      });
 
-    setStyle(this.bottomLine, {
-      left: x + "px",
-      top: y + height + "px",
-      width: width + "px",
-    });
+      setStyle(this.bottomLine, {
+        left: x + "px",
+        top: y + height + "px",
+        width: width + "px",
+      });
 
-    setStyle(this.leftLine, {
-      left: x + "px",
-      top: y + "px",
-      height: height + "px",
-    });
+      setStyle(this.leftLine, {
+        left: x + "px",
+        top: y + "px",
+        height: height + "px",
+      });
 
-    setStyle(this.rightLine, {
-      left: x + width + "px",
-      top: y + "px",
-      height: height + "px",
-    });
+      setStyle(this.rightLine, {
+        left: x + width + "px",
+        top: y + "px",
+        height: height + "px",
+      });
 
-    setStyle(this.topLeftDot, {
-      left: x - dotSize / 2 + "px",
-      top: y - dotSize / 2 + "px",
-    });
+      setStyle(this.topLeftDot, {
+        left: x - dotSize / 2 + "px",
+        top: y - dotSize / 2 + "px",
+      });
 
-    setStyle(this.topCenterDot, {
-      left: x + width / 2 - dotSize / 2 + "px",
-      top: y - dotSize / 2 + "px",
-    });
+      setStyle(this.topCenterDot, {
+        left: x + width / 2 - dotSize / 2 + "px",
+        top: y - dotSize / 2 + "px",
+      });
 
-    setStyle(this.topRightDot, {
-      left: x + width - dotSize / 2 + "px",
-      top: y - dotSize / 2 + "px",
-    });
+      setStyle(this.topRightDot, {
+        left: x + width - dotSize / 2 + "px",
+        top: y - dotSize / 2 + "px",
+      });
 
-    setStyle(this.bottomLeftDot, {
-      left: x - dotSize / 2 + "px",
-      top: y + height - dotSize / 2 + "px",
-    });
+      setStyle(this.bottomLeftDot, {
+        left: x - dotSize / 2 + "px",
+        top: y + height - dotSize / 2 + "px",
+      });
 
-    setStyle(this.bottomCenterDot, {
-      left: x + width / 2 - dotSize / 2 + "px",
-      top: y + height - dotSize / 2 + "px",
-    });
+      setStyle(this.bottomCenterDot, {
+        left: x + width / 2 - dotSize / 2 + "px",
+        top: y + height - dotSize / 2 + "px",
+      });
 
-    setStyle(this.bottomRightDot, {
-      left: x + width - dotSize / 2 + "px",
-      top: y + height - dotSize / 2 + "px",
-    });
+      setStyle(this.bottomRightDot, {
+        left: x + width - dotSize / 2 + "px",
+        top: y + height - dotSize / 2 + "px",
+      });
 
-    setStyle(this.leftCenterDot, {
-      left: x - dotSize / 2 + "px",
-      top: y + height / 2 - dotSize / 2 + "px",
-    });
+      setStyle(this.leftCenterDot, {
+        left: x - dotSize / 2 + "px",
+        top: y + height / 2 - dotSize / 2 + "px",
+      });
 
-    setStyle(this.rightCenterDot, {
-      left: x + width - dotSize / 2 + "px",
-      top: y + height / 2 - dotSize / 2 + "px",
-    });
+      setStyle(this.rightCenterDot, {
+        left: x + width - dotSize / 2 + "px", 
+        top: y + height / 2 - dotSize / 2 + "px",
+      });
+    }
   };
 
   addMove = ({ callback }) => {
@@ -210,10 +222,14 @@ class srnd {
       this.el.style.top = y + "px";
 
       callback();
-    };
 
-    const cancelMove = () => {
-      this.el.removeEventListener("mousemove", mouseMove);
+      if (typeof this.onDrag === "function") {
+        this.onDrag({
+          el: this.el,
+          x,
+          y,
+        });
+      }
     };
 
     this.el.addEventListener("mousedown", ({ clientX, clientY }) => {
@@ -223,9 +239,28 @@ class srnd {
       top = this.el.offsetTop;
 
       this.el.addEventListener("mousemove", mouseMove);
+
+      if (typeof this.onDragStart === "function") {
+        this.onDragStart({
+          el: this.el,
+          x: clientX,
+          y: clientY,
+        });
+      }
     });
-    this.el.addEventListener("mouseout", cancelMove);
-    this.el.addEventListener("mouseup", cancelMove);
+    this.el.addEventListener("mouseout", () => {
+      this.el.removeEventListener("mousemove", mouseMove);
+    });
+    this.el.addEventListener("mouseup", ({ clientX, clientY }) => {
+      this.el.removeEventListener("mousemove", mouseMove);
+      if (typeof this.onDragStop === "function") {
+        this.onDragStop({
+          el: this.el,
+          x: clientX,
+          y: clientY,
+        });
+      }
+    });
   };
 
   addScale = ({ controllers, callback }) => {
@@ -244,15 +279,16 @@ class srnd {
             width = this.scaleWidth;
             height = endY - moveEvent.clientY;
             maxHeight = endY;
-            maxWidth = this.bwidth - startX;
+            maxWidth = this.scaleWidth;
             top = this.scaleHeight === 30 ? endY - 30 : moveEvent.clientY;
             left = startX;
+
             break;
           case "s":
             width = this.scaleWidth;
             height = moveEvent.clientY - startY;
             maxHeight = this.bheight - startY;
-            maxWidth = this.bwidth - startX;
+            maxWidth = this.scaleWidth;
             top = startY;
             left = startX;
             break;
@@ -260,7 +296,7 @@ class srnd {
             width = endX - moveEvent.clientX;
             height = this.scaleHeight;
             maxHeight = this.bheight - startY;
-            maxWidth = endX;
+            maxWidth = endX - this.minX;
             top = startY;
             left = this.scaleWidth === 30 ? endX - 30 : moveEvent.clientX;
             break;
@@ -268,14 +304,14 @@ class srnd {
             width = moveEvent.clientX - startX;
             height = this.scaleHeight;
             maxHeight = this.bheight - startY;
-            maxWidth = this.bwidth - startX;
+            maxWidth = this.bwidth - startX + this.minX;
             top = startY;
             left = startX;
             break;
           case "se":
             width = moveEvent.clientX - startX;
             height = moveEvent.clientY - startY;
-            maxWidth = this.bwidth - startX;
+            maxWidth = this.bwidth - startX + this.minX;
             maxHeight = this.bheight - startY;
             top = startY;
             left = startX;
@@ -283,7 +319,7 @@ class srnd {
           case "sw":
             width = endX - moveEvent.clientX;
             height = moveEvent.clientY - startY;
-            maxWidth = endX;
+            maxWidth = endX - this.minX;
             maxHeight = this.bheight - startY;
             top = startY;
             left = this.scaleWidth === 30 ? endX - 30 : moveEvent.clientX;
@@ -291,7 +327,7 @@ class srnd {
           case "ne":
             width = moveEvent.clientX - startX;
             height = endY - moveEvent.clientY;
-            maxWidth = this.bwidth - startX;
+            maxWidth = this.bwidth - startX + this.minX;
             maxHeight = endY;
             top = this.scaleHeight === 30 ? endY - 30 : moveEvent.clientY;
             left = startX;
@@ -299,7 +335,7 @@ class srnd {
           case "nw":
             width = endX - moveEvent.clientX;
             height = endY - moveEvent.clientY;
-            maxWidth = endX;
+            maxWidth = endX - this.minX;
             maxHeight = endY;
             top = this.scaleHeight === 30 ? endY - 30 : moveEvent.clientY;
             left = this.scaleWidth === 30 ? endX - 30 : moveEvent.clientX;
@@ -322,10 +358,16 @@ class srnd {
         left =
           left < this.minX ? this.minX : left > this.maxX ? this.maxX : left;
 
-        this.el.style.width = width + "px";
-        this.el.style.height = height + "px";
-        this.el.style.left = left + "px";
-        this.el.style.top = top + "px";
+        setStyle(this.el, {
+          width: width + "px",
+          height: height + "px",
+          left: left + "px",
+          top: top + "px",
+        });
+
+        if (typeof this.onResize === "function") {
+          this.onResize({ el: this.el, x: left, y: top, width, height });
+        }
 
         callback();
       };
@@ -348,9 +390,25 @@ class srnd {
         endX = x + width;
         endY = y + height;
 
+        if (typeof this.onResizeStart === "function") {
+          this.onResizeStart({ el: this.el, x, y, width, height });
+        }
+
         controller.addEventListener("mousemove", scale);
         controller.addEventListener("mouseout", mouseout);
-        controller.addEventListener("mouseup", mouseup);
+        controller.addEventListener("mouseup", () => {
+          mouseup();
+          if (typeof this.onResizeStop === "function") {
+            const { x, y, width, height } = this.el.getBoundingClientRect();
+            this.onResizeStop({
+              el: this.el,
+              x,
+              y,
+              width,
+              height,
+            });
+          }
+        });
 
         window.addEventListener("mouseup", mouseup);
       });
