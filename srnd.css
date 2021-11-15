@@ -1,0 +1,66 @@
+body {
+    --line-color: #fff;
+    --dot-size: 10px;
+    --dot-bg-color: #fff;
+  }
+  .srnd_line {
+    position: absolute;
+    background-color: var(--line-color);
+  }
+  .srnd_line.top,
+  .srnd_line.bottom {
+    left: 0;
+    height: 1px;
+  }
+  .srnd_line.left,
+  .srnd_line.right {
+    top: 0;
+    width: 1px;
+  }
+  .srnd_line.top {
+    top: 0;
+    cursor: n-resize;
+  }
+  .srnd_line.bottom {
+    bottom: 0;
+    cursor: s-resize;
+  }
+  .srnd_line.left {
+    left: 0;
+    cursor: w-resize;
+  }
+  .srnd_line.right {
+    right: 0;
+    cursor: e-resize;
+  }
+  .srnd_dot {
+    position: absolute;
+    width: var(--dot-size);
+    height: var(--dot-size);
+    border: 1px solid #000;
+    background-color: var(--dot-bg-color);
+  }
+  .srnd_dot.topLeft {
+    cursor: nw-resize;
+  }
+  .srnd_dot.topRight {
+    cursor: ne-resize;
+  }
+  .srnd_dot.bottomLeft {
+    cursor: sw-resize;
+  }
+  .srnd_dot.bottomRight {
+    cursor: se-resize;
+  }
+  .srnd_dot.leftCenter {
+    cursor: w-resize;
+  }
+  .srnd_dot.rightCenter {
+    cursor: e-resize;
+  }
+  .srnd_dot.topCenter {
+    cursor: n-resize;
+  }
+  .srnd_dot.bottomCenter {
+    cursor: s-resize;
+  }

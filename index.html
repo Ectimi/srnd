@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./srnd.css">
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background-color: aliceblue;
+      }
+
+      .box {
+        width: 800px;
+        height: 800px;
+        background-color: antiquewhite;
+      }
+
+      .inner{
+        width: 200px;
+        height: 200px;
+        background-color: red;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="box" class="box">
+      <div id="inner" class="inner"></div>
+    </div>
+
+    <script src="./srnd.js"></script>
+    <script>
+      new srnd({
+        el: document.getElementById("inner"),
+        boundary:document.getElementById('box')
+      });
+    </script>
+  </body>
+</html>
