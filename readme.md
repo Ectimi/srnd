@@ -7,7 +7,7 @@
 
 #### 示例
 
-```javascipt
+```javascript
     new srnd({
         el: document.getElementById("inner"),
         boundary:document.getElementById('box'),
