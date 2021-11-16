@@ -25,6 +25,7 @@ class srnd {
   constructor({
     el,
     boundary = document.documentElement,
+    noBoundary = false,
     onlyDrag = false,
     onDragStart,
     onDrag,
@@ -36,9 +37,11 @@ class srnd {
     if (!isHtmlElement(el)) {
       throw new Error("el should a html element");
     }
+
     const { width, height } = el.getBoundingClientRect();
     this.el = el;
     this.boundary = boundary;
+    this.noBoundary = noBoundary;
     this.onlyDrag = onlyDrag;
     this.onDragStart = onDragStart;
     this.onDrag = onDrag;
@@ -204,7 +207,7 @@ class srnd {
       });
 
       setStyle(this.rightCenterDot, {
-        left: x + width - dotSize / 2 + "px", 
+        left: x + width - dotSize / 2 + "px",
         top: y + height / 2 - dotSize / 2 + "px",
       });
     }
@@ -216,8 +219,12 @@ class srnd {
     const mouseMove = ({ clientX, clientY }) => {
       let x = clientX - startX + left;
       let y = clientY - startY + top;
-      x = x < this.minX ? this.minX : x > this.maxX ? this.maxX : x;
-      y = y < this.minY ? this.minY : y > this.maxY ? this.maxY : y;
+
+      if (!this.noBoundary) {
+        x = x < this.minX ? this.minX : x > this.maxX ? this.maxX : x;
+        y = y < this.minY ? this.minY : y > this.maxY ? this.maxY : y;
+      }
+
       this.el.style.left = x + "px";
       this.el.style.top = y + "px";
 
@@ -230,6 +237,11 @@ class srnd {
           y,
         });
       }
+    };
+
+    const mouseout = () => {
+      this.el.removeEventListener("mousemove", mouseMove);
+      window.addEventListener("mousemove", mouseMove);
     };
 
     this.el.addEventListener("mousedown", ({ clientX, clientY }) => {
@@ -248,11 +260,11 @@ class srnd {
         });
       }
     });
-    this.el.addEventListener("mouseout", () => {
-      this.el.removeEventListener("mousemove", mouseMove);
-    });
+    this.el.addEventListener("mouseout", mouseout);
     this.el.addEventListener("mouseup", ({ clientX, clientY }) => {
+      window.removeEventListener("mousemove", mouseMove);
       this.el.removeEventListener("mousemove", mouseMove);
+      this.el.removeEventListener("mouseout", mouseout);
       if (typeof this.onDragStop === "function") {
         this.onDragStop({
           el: this.el,
@@ -342,21 +354,23 @@ class srnd {
             break;
         }
 
-        width =
-          width < this.minWidth
-            ? this.minWidth
-            : width > maxWidth
-            ? maxWidth
-            : width;
-        height =
-          height < this.minHeight
-            ? this.minHeight
-            : height > maxHeight
-            ? maxHeight
-            : height;
-        top = top < this.minY ? this.minY : top > this.maxY ? this.maxY : top;
-        left =
-          left < this.minX ? this.minX : left > this.maxX ? this.maxX : left;
+        if (!this.noBoundary) {
+          width =
+            width < this.minWidth
+              ? this.minWidth
+              : width > maxWidth
+              ? maxWidth
+              : width;
+          height =
+            height < this.minHeight
+              ? this.minHeight
+              : height > maxHeight
+              ? maxHeight
+              : height;
+          top = top < this.minY ? this.minY : top > this.maxY ? this.maxY : top;
+          left =
+            left < this.minX ? this.minX : left > this.maxX ? this.maxX : left;
+        }
 
         setStyle(this.el, {
           width: width + "px",
